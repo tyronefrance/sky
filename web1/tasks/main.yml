@@ -1,0 +1,10 @@
+- name: Installing nginx - [web-01]
+  apt: pkg=nginx state=installed update_cache=true
+  notify:
+    - start nginx
+
+- name: Upload index.html - [web-01]
+  copy: src=static_files/index.html dest=/var/www/html/index.html mode=0644
+
+- name: Upload Images - [web-01]
+  copy: src=static_files/1.jpg dest=/var/www/html/1.jpg mode=0644

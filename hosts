@@ -1,0 +1,7 @@
+[local]
+localhost
+
+[launched]
+
+[local:vars]
+ansible_python_interpreter=/usr/bin/python3

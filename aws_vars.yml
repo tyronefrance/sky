@@ -1,0 +1,25 @@
+####################################################
+# Auther: Tyrone France                            #
+# Creation date: 25/07/2019                        #
+#                                                  #
+# /etc/ansible/aws_vars.yml                        #
+# -------------------------                        #
+####################################################
+instance_type: t2.nano
+ami: ami-0986c2ac728528ac2  # Ubuntu 14.04 LTS
+app_code_user: "ubuntu" # remote user
+env: production
+aws_region:     "us-east-2"
+vpc_name:       "sky-production"
+vpc_cidr_block: "10.0.0.0/16"
+my_ip_range:          "194.75.63.98/32" # This will be your public IP/RANGE
+public_subnet_1_cidr:  "10.0.50.0/24"
+public_subnet_2_cidr:  "10.0.51.0/24"
+public_subnet_3_cidr:  "10.0.52.0/24"
+private_subnet_1_cidr:  "10.0.0.0/24"
+private_subnet_2_cidr:  "10.0.1.0/24"
+private_subnet_3_cidr:  "10.0.2.0/24"
+key_name: sky-production-key
+hosted_zone_name: "stress-less-aws.co.uk"
+#hosted_zone_id: "Z2WFU18RRR6ZW6"
+cert_arn: "arn:aws:acm:us-east-2:163373365077:certificate/456cd6c8-1db9-4212-9068-01648bc80701"

@@ -1,0 +1,418 @@
+---
+####################################################
+# Auther: Tyrone France                            #
+# Creation date: 25/07/2019                        #
+#                                                  #
+# /etc/ansible/aws_stack.yml                       #
+# --------------------------                       #
+####################################################
+- name: AWS MultiAZ VPC Web Cluster
+  hosts: localhost
+  connection: local
+  gather_facts: False
+  pre_tasks:
+    - include_vars: aws_vars.yml
+  tasks:
+# Creating VPC.
+    - name:               Creating MultAZ VPC - [Zone A/B/C]
+      ec2_vpc_net:
+        name:             "{{ vpc_name }}"
+        cidr_block:       "{{ vpc_cidr_block }}"
+        region:           "{{ aws_region }}"
+        state:            "present"
+      register: my_vpc
+
+    - name:               Setting VPC ID - [Thats a Fact] :p
+      set_fact:
+        vpc_id:           "{{ my_vpc.vpc.id }}"
+
+# Creating Private Subnets
+    - name:               Creating Private Subnet - [Zone A]
+      ec2_vpc_subnet:
+        state:            "present"
+        vpc_id:           "{{ vpc_id }}"
+        cidr:             "{{ private_subnet_1_cidr }}"
+        az:               "{{ aws_region }}a"
+        region:           "{{ aws_region }}"
+        resource_tags:
+          Name:           "sky-pro-private-1"
+      register: my_private_subnet_1
+
+    - name:               Creating Private Subnet - [Zone B]
+      ec2_vpc_subnet:
+        state:            "present"
+        vpc_id:           "{{ vpc_id }}"
+        cidr:             "{{ private_subnet_2_cidr }}"
+        az:               "{{ aws_region }}b"
+        region:           "{{ aws_region }}"
+        resource_tags:
+          Name:           "sky-pro-private-2"
+      register: my_private_subnet_2
+
+    - name:               Creating Private Subnet - [Zone C]
+      ec2_vpc_subnet:
+        state:            "present"
+        vpc_id:           "{{ vpc_id }}"
+        cidr:             "{{ private_subnet_3_cidr }}"
+        az:               "{{ aws_region }}c"
+        region:           "{{ aws_region }}"
+        resource_tags:
+          Name:           "sky-pro-private-3"
+      register: my_private_subnet_3
+
+# Creating Public Subnets
+    - name:               Creating Public Subnet - [Zone A]
+      ec2_vpc_subnet:
+        state:            "present"
+        vpc_id:           "{{ vpc_id }}"
+        cidr:             "{{ public_subnet_1_cidr }}"
+        az:               "{{ aws_region }}a"
+        region:           "{{ aws_region }}"
+        resource_tags:
+          Name:           "sky-pro-public-1"
+      register: my_public_subnet_1
+
+    - name:               Creating Public Subnett - [Zone B]
+      ec2_vpc_subnet:
+        state:            "present"
+        vpc_id:           "{{ vpc_id }}"
+        cidr:             "{{ public_subnet_2_cidr }}"
+        az:               "{{ aws_region }}b"
+        region:           "{{ aws_region }}"
+        resource_tags:
+          Name:           "sky-pro-public-2"
+      register: my_public_subnet_2
+
+    - name:               Creating Public Subnett - [Zone C]
+      ec2_vpc_subnet:
+        state:            "present"
+        vpc_id:           "{{ vpc_id }}"
+        cidr:             "{{ public_subnet_3_cidr }}"
+        az:               "{{ aws_region }}c"
+        region:           "{{ aws_region }}"
+        resource_tags:
+          Name:           "sky-pro-public-3"
+      register: my_public_subnet_3
+
+# Creating Internet Gateway
+    - name:               Creating Internet Gateway 1/1 for VPC
+      ec2_vpc_igw:
+        vpc_id:           "{{ vpc_id }}"
+        region:           "{{ aws_region }}"
+        state:            "present"
+        resource_tags:
+          Name:           "sky-pro-igw"
+      register: my_vpc_igw
+
+# Creating NAT Gateway
+    - name:               Creating NAT Gateway 1/3 + EIP - [Zone A]
+      ec2_vpc_nat_gateway:
+        subnet_id:           "{{ my_public_subnet_1.subnet.id }}"
+#        wait: yes
+        region:           "{{ aws_region }}"
+        state:            "present"
+      register: new_nat_gateway_1
+
+    - name:               Creating NAT Gateway 2/3 + EIP - [Zone B]
+      ec2_vpc_nat_gateway:
+        subnet_id:           "{{ my_public_subnet_2.subnet.id }}"
+#        wait: yes
+        region:           "{{ aws_region }}"
+        state:            "present"
+      register: new_nat_gateway_2
+
+    - name:               Creating NAT Gateway 3/3 + EIP - [Zone C]
+      ec2_vpc_nat_gateway:
+        subnet_id:           "{{ my_public_subnet_3.subnet.id }}"
+#        wait: yes
+        region:           "{{ aws_region }}"
+        state:            "present"
+      register: new_nat_gateway_3
+
+# Creating Public Route Tables
+    - name:               Set up public subnet route table
+      ec2_vpc_route_table:
+        vpc_id:           "{{ vpc_id }}"
+        region:           "{{ aws_region }}"
+        tags:
+          Name:           "sky-pro-public-rt"
+        subnets:
+          - "{{ my_public_subnet_1.subnet.id }}"
+          - "{{ my_public_subnet_2.subnet.id }}"
+          - "{{ my_public_subnet_3.subnet.id }}"
+        routes:
+          - dest:         "0.0.0.0/0"
+            gateway_id:   "{{ my_vpc_igw.gateway_id }}"
+
+# Creating Private Route Tables
+    - name:               Creating Private Subnet Route Table Using NAT-GW - [Zone A]
+      ec2_vpc_route_table:
+        vpc_id:           "{{ vpc_id }}"
+        region:           "{{ aws_region }}"
+        tags:
+          Name:           "sky-pro-private-rt-1"
+        subnets:
+          - "{{ my_private_subnet_1.subnet.id }}"
+        routes:
+          - dest:         "0.0.0.0/0"
+            gateway_id:   "{{ new_nat_gateway_1.nat_gateway_id }}"
+
+    - name:               Creating Private Subnet Route Table Using NAT-GW - [Zone B]
+      ec2_vpc_route_table:
+        vpc_id:           "{{ vpc_id }}"
+        region:           "{{ aws_region }}"
+        tags:
+          Name:           "sky-pro-private-rt-2"
+        subnets:
+          - "{{ my_private_subnet_2.subnet.id }}"
+        routes:
+          - dest:         "0.0.0.0/0"
+            gateway_id:   "{{ new_nat_gateway_2.nat_gateway_id }}"
+
+    - name:               Creating Private Subnet Route Table Using NAT-GW - [Zone C]
+      ec2_vpc_route_table:
+        vpc_id:           "{{ vpc_id }}"
+        region:           "{{ aws_region }}"
+        tags:
+          Name:           "sky-pro-private-rt-3"
+        subnets:
+          - "{{ my_private_subnet_3.subnet.id }}"
+        routes:
+          - dest:         "0.0.0.0/0"
+            gateway_id:   "{{ new_nat_gateway_3.nat_gateway_id }}"
+
+
+- name: Creating ALB and Web Instances
+  hosts: localhost
+  connection: local
+  gather_facts: False
+  pre_tasks:
+    - include_vars: aws_vars.yml 
+  tasks:
+
+# Creating Security Groups
+# ops-sg
+    - name:               Creating Operations Security Group
+      ec2_group:
+        name:             "ops-ec2-access"
+        description:      "ops-ec2-access"
+        vpc_id:           "{{ vpc_id }}"
+        region:           "{{ aws_region }}"
+        rules:
+          - proto:        "tcp"
+            from_port:    "22"
+            to_port:      "22"
+            cidr_ip:      "{{ my_ip_range }}"
+          - proto:        "tcp"
+            from_port:    "80"
+            to_port:      "80"
+            cidr_ip:      "{{ my_ip_range }}"
+          - proto:        "tcp"
+            from_port:    "443"
+            to_port:      "443"
+            cidr_ip:      "{{ my_ip_range }}"
+          - proto: icmp
+            from_port: 8 
+            to_port:  -1 
+            cidr_ip:      "{{ my_ip_range }}"
+      register: ops_sg
+
+# elb-sg
+    - name:               Creating ALB Security Group
+      ec2_group:
+        name:             "elb-access"
+        description:      "elb-access"
+        vpc_id:           "{{ vpc_id }}"
+        region:           "{{ aws_region }}"
+        rules:
+          - proto:        "tcp"
+            from_port:    "443"
+            to_port:      "443"
+            cidr_ip:      "0.0.0.0/0"
+      register: elb_sg
+
+# web-sg
+    - name:               Creating EC2 Web Security Group
+      ec2_group:
+        name:             "web-ec2-access"
+        description:      "web-ec2-access"
+        vpc_id:           "{{ vpc_id }}"
+        region:           "{{ aws_region }}"
+        rules:
+          - proto:        "tcp"
+            from_port:    "80"
+            to_port:      "80"
+            group_id:     "{{ elb_sg.group_id }}"
+#          - proto:        "tcp"
+#            from_port:    "80"
+#            to_port:      "80"
+#            cidr_ip:      "0.0.0.0/0"
+      register: web_sg
+
+# Creating EC2 Web Instances
+# web-01
+    - name: Creating EC2 instance - [web-01] - [Zone A]
+      ec2:
+        key_name: "{{ key_name }}"
+        region: "{{ aws_region }}"
+        group: ['ops-ec2-access', 'web-ec2-access']
+        instance_type: "{{ instance_type }}"
+        image: "{{ ami }}"
+        wait: yes
+        instance_tags:
+            Name: "sky-web-01"
+        count_tag: env
+        exact_count: 1
+        vpc_subnet_id: "{{ my_public_subnet_1.subnet.id  }}"
+        assign_public_ip: yes
+      register: web_01
+
+    - name: Waiting for [web-01] to appear on the network
+      wait_for: host={{ item.public_dns_name }} port=22 delay=10 timeout=180 state=started
+      with_items: "{{ web_01.tagged_instances }}"
+
+    - name: Adding [web-01] ip addresses to hosts group
+      add_host: hostname={{ item.public_ip }} groupname=launched_web1
+      with_items: "{{ web_01.tagged_instances }}"
+
+# web-02
+    - name: Creating EC2 instance - [web-02] - [Zone A]
+      ec2:
+        key_name: "{{ key_name }}"
+        region: "{{ aws_region }}"
+        group: ['ops-ec2-access', 'web-ec2-access']
+        instance_type: "{{ instance_type }}"
+        image: "{{ ami }}"
+        wait: yes
+        instance_tags:
+            Name: "sky-web-02"
+        count_tag: env
+        exact_count: 1
+        vpc_subnet_id: "{{ my_public_subnet_2.subnet.id  }}"
+        assign_public_ip: yes
+      register: web_02
+
+    - name: Waiting for the [web-02] to appear on the network
+      wait_for: host={{ item.public_dns_name }} port=22 delay=10 timeout=180 state=started
+      with_items: "{{ web_02.tagged_instances }}"
+
+    - name: Adding [web-02] ip addresses to hosts group
+      add_host: hostname={{ item.public_ip }} groupname=launched_web2
+      with_items: "{{ web_02.tagged_instances }}"
+
+# web-03
+    - name: Creating EC2 instance - [web-03] - [Zone B]
+      ec2:
+        key_name: "{{ key_name }}"
+        region: "{{ aws_region }}"
+        group: ['ops-ec2-access', 'web-ec2-access']
+        instance_type: "{{ instance_type }}"
+        image: "{{ ami }}"
+        wait: yes
+        instance_tags:
+            Name: "sky-web-03"
+        count_tag: env
+        exact_count: 1
+        vpc_subnet_id: "{{ my_public_subnet_3.subnet.id  }}"
+        assign_public_ip: yes
+      register: web_03
+
+    - name: Waiting for the [web-03] to appear on the network
+      wait_for: host={{ item.public_dns_name }} port=22 delay=10 timeout=180 state=started
+      with_items: "{{ web_03.tagged_instances }}"
+
+    - name: Adding [web-03] ip addresses to hosts group
+      add_host: hostname={{ item.public_ip }} groupname=launched_web3
+      with_items: "{{ web_03.tagged_instances }}"
+
+
+# Install nginx
+- name: Injecting Nginx to -[web-01]
+  hosts: launched_web1
+  remote_user: ubuntu
+  become: true
+  become_method: sudo
+  gather_facts: True
+  roles:
+    - web1
+
+- name: Injecting Nginx to -[web-02]
+  hosts: launched_web2
+  remote_user: ubuntu
+  become: true
+  become_method: sudo
+  gather_facts: True
+  roles:
+    - web2
+
+- name: Injecting Nginx to -[web-03]
+  hosts: launched_web3
+  remote_user: ubuntu
+  become: true
+  become_method: sudo
+  gather_facts: True
+  roles:
+    - web3
+
+# Creating Application LoadBalancer Target Group
+# Creating ALB
+- name: Creating Application LoadBalancer + Targets - [ALB-TARGETS]
+  hosts: localhost
+  connection: local
+  gather_facts: False
+  pre_tasks:
+    - include_vars: aws_vars.yml
+  tasks:
+    - name: Creating Targets
+      elb_target_group:
+        name: sky-web-targets
+        protocol: http
+        port: 80
+        vpc_id:           "{{ vpc_id }}"
+        region:           "{{ aws_region }}"
+#        health_check_path: /
+#        successful_response_codes: "200,250-260"
+        target_type: "instance"
+        targets:
+          - Id: "{{ web_01.instances[0].id }}"
+            Port: 80
+          - Id: "{{ web_02.instances[0].id }}"
+            Port: 80
+          - Id: "{{ web_03.instances[0].id }}"
+            Port: 80
+        state: present
+#        wait_timeout: 200
+#        wait: True
+
+    - elb_application_lb:
+        name: sky-web-alb
+        region: "{{ aws_region }}"
+        scheme: internet-facing
+        subnets:
+          - "{{ my_public_subnet_1.subnet.id }}"
+          - "{{ my_public_subnet_2.subnet.id }}"
+          - "{{ my_public_subnet_3.subnet.id }}"
+        security_groups:
+          - "{{ elb_sg.group_id }}"
+        listeners:
+          - Protocol: HTTPS
+            Port: 443
+            DefaultActions:
+              - Type: forward
+                TargetGroupName: "sky-web-targets"
+            SslPolicy: "ELBSecurityPolicy-2016-08"
+            Certificates:
+              - CertificateArn: "{{ cert_arn }}"
+        state: present
+      register: elb
+
+    - name: Adding [ALB] entry into DNS [ROUTE53]
+      route53:
+       state: present
+       zone: "{{ hosted_zone_name }}"
+       record: "sky.{{ hosted_zone_name }}"
+       type: A
+       value: "{{ elb.dns_name }}"
+       alias: True
+       alias_hosted_zone_id: "{{ elb.canonical_hosted_zone_id }}"
+
