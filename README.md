@@ -3,9 +3,10 @@
 # Creation date: 25/07/2019                        #
 #                                                  #
 # This guide will talk you through building an     # 
-# entire AWS MultiAZ Stack with 3 demo web-servers #
+# entire AWS MultiAZ Stack with 3 x web-servers    #
 # using Ansible in AWS US-EAST-2 [OHIO]            #
 ####################################################
+
 
 #################
 ### AWS STACK ###
