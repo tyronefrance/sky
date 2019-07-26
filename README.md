@@ -18,11 +18,9 @@
 - 3 x public subnets in zone a/b/c
 - 1 x elastic load balancer
 
-####################
-### PREREQUISITS ###
-####################
+## PREREQUISITS
 
-AMAZON AWS RESOURCE LIMITS:
+# AMAZON AWS RESOURCE LIMITS:
 Ensure you have the appropriate AWS permissions and AWS Resource limits for the above infrastructure.
 
 
