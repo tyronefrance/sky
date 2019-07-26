@@ -217,10 +217,10 @@ I also did not have time to create a tear down script.
 
 
 
+<details><summary>EXAMPLE RUN</summary>
+<p>
 
-### EXAMPLE RUN
-
-```
+```python
 └─╾ ansible-playbook aws_stack.yml --private-key /etc/ansible/sky/sky-production-key.pem
 
 PLAY [AWS MultiAZ VPC Web Cluster] **********************************************************************************************************************************************************************************************************
@@ -388,3 +388,13 @@ PLAY RECAP *********************************************************************
 52.15.82.79                : ok=5    changed=3    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   
 localhost                  : ok=34   changed=27   unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   
 ```
+
+</p>
+</details>
+
+
+### EXAMPLE RUN
+
+
+
+
