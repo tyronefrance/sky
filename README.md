@@ -24,6 +24,7 @@ using Ansible in AWS US-EAST-2 [OHIO]
 - [x] 3 x public subnets in zone a/b/c
 - [x] 1 x elastic load balancer
 
+### LOGICAL DIAGRAM
 ![Logical Diagram](sky_logical_diagram.jpg)
 
 ### PREREQUISITS
