@@ -391,10 +391,3 @@ localhost                  : ok=34   changed=27   unreachable=0    failed=0    s
 
 </p>
 </details>
-
-
-### EXAMPLE RUN
-
-
-
-
