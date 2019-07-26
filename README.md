@@ -208,21 +208,21 @@ localhost                  : ok=37   changed=29   unreachable=0    failed=0    s
 
 ### NOTES
 
-`IMPORTANT` - Please note that after your initial launch it may take a while for the DNS to propagate the update for the ALB - [sky.stress-less-aws.co.uk] so feel free to add an IP for the ELB to your hosts file.
+* `IMPORTANT` - Please note that after your initial launch it may take a while for the DNS to propagate the update for the ALB - [sky.stress-less-aws.co.uk] so feel free to add an IP for the ELB to your hosts file.
 
-Dont forget to hit refresh several times in your browser and see the load balancer balancing the traffic between all three servers.
+* Dont forget to hit refresh several times in your browser and see the load balancer balancing the traffic between all three servers.
 
-I have changed all the id/ips/certs/keys since this tutorial launch.
+* I have changed all the id/ips/certs/keys since this tutorial launch.
   
-Please understand this is a test environment so I have setup 3 x web servers each with different content to show the load-balancer is doing its job. 
+* Please understand this is a test environment so I have setup 3 x web servers each with different content to show the load-balancer is doing its job. 
 
-Currently the 3 x web servers will be accessible via ssh only from your source IP and they are locked down to only receive traffic on port 80 from the Elastic Load-balancer in front of it.
+* Currently the 3 x web servers will be accessible via ssh only from your source IP and they are locked down to only receive traffic on port 80 from the Elastic Load-balancer in front of it.
 
-The load-balancer itself is configured to only receive traffic on port 443 from 0.0.0.0/0. I could also have utilised 'Ansible Vault' to encrypt and parameterise the AWS KEY/SECRET for more security but I did not have time.
+* The load-balancer itself is configured to only receive traffic on port 443 from 0.0.0.0/0. I could also have utilised 'Ansible Vault' to encrypt and parameterise the AWS KEY/SECRET for more security but I did not have time.
 
-I have also not added a Bastian host as I did not have time to do so.
+* I have also not added a Bastian host as I did not have time to do so.
 
-I also did not have time to create a tear down script.
+* I also did not have time to create a tear down script.
 
 
 
