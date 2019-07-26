@@ -12,11 +12,15 @@ using Ansible in AWS US-EAST-2 [OHIO]
 
 ### AWS STACK
 
-- [x] 3 x EC2 Instances in zone a/b/c
+- [x] 1 x AWS VPC
+- [x] 3 x Web EC2 Instances in zone a/b/c
+- [ ] 3 x App EC2 Instances in zone a/b/c - [Will do in the future]
+- [ ] 1 x Oracle MultiAZ RDS Instance in zone a/b/c - [Will do in the future]
 - [x] 4 x elastic ips
 - [x] 3 x nat gateways in zone a/b/c
 - [x] 1 x Internet gateway
 - [x] 3 x private subnets in zone a/b/c
+- [ ] 3 x private RDS subnets in zone a/b/c - [Will do in the future]
 - [x] 3 x public subnets in zone a/b/c
 - [x] 1 x elastic load balancer
 
