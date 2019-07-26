@@ -23,6 +23,8 @@ using Ansible in AWS US-EAST-2 [OHIO]
 - [ ] 3 x private RDS subnets in zone a/b/c - [Will do in the future]
 - [x] 3 x public subnets in zone a/b/c
 - [x] 1 x elastic load balancer
+- [x] 1 x route53 automated DNS attachment
+- [x] 1 x automated SSL certificate attachment
 
 ### LOGICAL DIAGRAM
 ![Logical Diagram](sky_logical_diagram.jpg)
