@@ -1,14 +1,14 @@
 
-# Auther: Tyrone France
-# Creation date: 26/07/2019
+### Auther: Tyrone France
+### Creation date: 26/07/2019
 
-# This guide will talk you through building an 
-# entire AWS MultiAZ Stack with 3 x web-servers
-# using Ansible in AWS US-EAST-2 [OHIO]
+### This guide will talk you through building an 
+### entire AWS MultiAZ Stack with 3 x web-servers
+### using Ansible in AWS US-EAST-2 [OHIO]
 
 
 
-## AWS STACK
+### AWS STACK
 
 - 3 x EC2 Instances in zone a/b/c
 - 4 x elastic ips
@@ -18,9 +18,9 @@
 - 3 x public subnets in zone a/b/c
 - 1 x elastic load balancer
 
-## PREREQUISITS
+### PREREQUISITS
 
-# AMAZON AWS RESOURCE LIMITS:
+### AMAZON AWS RESOURCE LIMITS:
 Ensure you have the appropriate AWS permissions and AWS Resource limits for the above infrastructure.
 
 
@@ -47,10 +47,7 @@ Python 3.6.8
 Python 2.7.15+
 
 
-
-#########################################
-### CLONE THE PROJECT TO YOUR MACHINE ###
-#########################################
+### CLONE THE PROJECT TO YOUR MACHINE
 1.) Clone the SKY Project
 cd /etc/ansible/
 git clone https://github.com/tyronefrance/sky.git
