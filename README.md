@@ -1,16 +1,15 @@
-####################################################
-# Auther: Tyrone France                            #
-# Creation date: 26/07/2019                        #
-#                                                  #
-# This guide will talk you through building an     # 
-# entire AWS MultiAZ Stack with 3 x web-servers    #
-# using Ansible in AWS US-EAST-2 [OHIO]            #
-####################################################
+
+# Auther: Tyrone France
+# Creation date: 26/07/2019
+
+# This guide will talk you through building an 
+# entire AWS MultiAZ Stack with 3 x web-servers
+# using Ansible in AWS US-EAST-2 [OHIO]
 
 
-#################
-### AWS STACK ###
-#################
+
+## AWS STACK
+
 - 3 x EC2 Instances in zone a/b/c
 - 4 x elastic ips
 - 3 x nat gateways in zone a/b/c
