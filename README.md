@@ -154,9 +154,9 @@ Requested at	2019-07-25T19:19:26UTC
 Issued at	2019-07-25T19:35:42UTC
 ```
 
-### LETS INSPECT OUR PRE-DEFINED VARIABLES - [aws_vars.yml]
+### LET'S INSPECT OUR PRE-DEFINED VARIABLES - [aws_vars.yml]
 
-We can define the parameters below to fully customize our stack. There are a few things to bare in mind. Earlier we created the ec2key pair (sky-production-key). 
+We can define the parameters below to fully customise our stack. There are a few things to bear in mind. Earlier we created the ec2key pair (sky-production-key). 
 
 * KeyPairs in AWS are not global. So if you choose a different region as per what I have defined "us-east-2" Then you will need to recreate a new key in that region.
 * AMIs are not global. So if you choose a different region as per what I have defined "us-east-2" Then you will need to use another "Ubuntu 14.04 LTS" ami from that other region.
@@ -164,7 +164,7 @@ We can define the parameters below to fully customize our stack. There are a few
 ```
 └─╾ cat aws_vars.yml
 ####################################################
-# Auther: Tyrone France                            #
+# Author: Tyrone France                            #
 # Creation date: 25/07/2019                        #
 #                                                  #
 # /etc/ansible/aws_vars.yml                        #
@@ -208,7 +208,7 @@ localhost                  : ok=37   changed=29   unreachable=0    failed=0    s
 
 ### NOTES
 
-`IMPORTANT` - Please note that after your initial launch it may take a while for the DNS to propagate the update for the ALB - [sky.stress-less-aws.co.uk] so feel free to add an ip for the ELB to your hosts file.
+`IMPORTANT` - Please note that after your initial launch it may take a while for the DNS to propagate the update for the ALB - [sky.stress-less-aws.co.uk] so feel free to add an IP for the ELB to your hosts file.
 
 Dont forget to hit refresh several times in your browser and see the load balancer balancing the traffic between all three servers.
 
@@ -218,7 +218,7 @@ Please understand this is a test environment so I have setup 3 x web servers eac
 
 Currently the 3 x web servers will be accessible via ssh only from your source IP and they are locked down to only receive traffic on port 80 from the Elastic Load-balancer in front of it.
 
-The load-balancer itself is configured to only receive traffic on port 443 from 0.0.0.0/0. I could also have utilized 'Ansible Vault' to encrypt and parameterize the AWS KEY/SECRET for more security but I did not have time.
+The load-balancer itself is configured to only receive traffic on port 443 from 0.0.0.0/0. I could also have utilised 'Ansible Vault' to encrypt and parameterise the AWS KEY/SECRET for more security but I did not have time.
 
 I have also not added a Bastian host as I did not have time to do so.
 
