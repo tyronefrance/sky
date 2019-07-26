@@ -130,7 +130,7 @@
       register: new_nat_gateway_3
 
 # Creating Public Route Tables
-    - name:               Set up public subnet route table
+    - name:               Creating Public Subnet Route Table Using Internet-GW - [Zone A/B/C]
       ec2_vpc_route_table:
         vpc_id:           "{{ vpc_id }}"
         region:           "{{ aws_region }}"
