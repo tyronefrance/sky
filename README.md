@@ -1,5 +1,6 @@
 
 Auther: Tyrone France
+
 Creation date: 26/07/2019
 
 This guide will talk you through building an 
@@ -133,7 +134,7 @@ hosted_zone_name: "stress-less-aws.co.uk"
 cert_arn: "arn:aws:acm:us-east-2:168878865077:certificate/1234ab5c6-1d29-5457-9087-01648bc60701"
 ```
 
-3.) IMPORTANT - Dont forget to validate your certificate via DNS. If you browse to the AWS Certificate Manager Console you should see the certificate waiting to be validated there.
+3.) `IMPORTANT` - Dont forget to validate your certificate via DNS. If you browse to the AWS Certificate Manager Console you should see the certificate waiting to be validated there.
 [https://us-east-2.console.aws.amazon.com/acm/home?region=us-east-2](https://us-east-2.console.aws.amazon.com/acm/home?region=us-east-2)
 
 "The DNS record was written to your Route 53 hosted zone. It can take 30 minutes or longer for the changes to propagate and for AWS to validate the domain and issue the certificate."
@@ -198,7 +199,7 @@ localhost                  : ok=37   changed=29   unreachable=0    failed=0    s
 
 ### NOTES
 
-IMPORTANT - Please note that after your initial launch it may take a while for the DNS to propagate the update for the ALB - [sky.stress-less-aws.co.uk] so feel free to add an ip for the ELB to your hosts file.
+`IMPORTANT` - Please note that after your initial launch it may take a while for the DNS to propagate the update for the ALB - [sky.stress-less-aws.co.uk] so feel free to add an ip for the ELB to your hosts file.
 
 Dont forget to hit refresh several times in your browser and see the load balancer balancing the traffic between all three servers.
 
