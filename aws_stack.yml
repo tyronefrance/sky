@@ -226,6 +226,10 @@
         region:           "{{ aws_region }}"
         rules:
           - proto:        "tcp"
+            from_port:    "80"
+            to_port:      "80"
+            group_id:     "0.0.0.0/0"
+          - proto:        "tcp"
             from_port:    "443"
             to_port:      "443"
             cidr_ip:      "0.0.0.0/0"
@@ -243,10 +247,6 @@
             from_port:    "80"
             to_port:      "80"
             group_id:     "{{ elb_sg.group_id }}"
-#          - proto:        "tcp"
-#            from_port:    "80"
-#            to_port:      "80"
-#            cidr_ip:      "0.0.0.0/0"
       register: web_sg
 
 # Creating EC2 Web Instances
@@ -395,6 +395,17 @@
         security_groups:
           - "{{ elb_sg.group_id }}"
         listeners:
+          - Protocol: HTTP
+            Port: 80
+            DefaultActions:
+              - Type: redirect
+                RedirectConfig:
+                  Protocol: HTTPS
+                  Port: "443"
+                  Host: "#{host}"
+                  Path: "/#{path}"
+                  Query: "#{query}"
+                  StatusCode: "HTTP_301"
           - Protocol: HTTPS
             Port: 443
             DefaultActions:
