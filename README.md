@@ -53,87 +53,105 @@ Python 2.7.15+
 
 ### CLONE THE PROJECT TO YOUR MACHINE
 1.) Clone the SKY Project
+```
 cd /etc/ansible/
 git clone https://github.com/tyronefrance/sky.git
+```
 
-######################################################
-### CREATE A PRODUCTION READY KEY WITH EC2 KEYPAIR ###
-######################################################
+### CREATE A PRODUCTION READY KEY WITH EC2 KEYPAIR
+
 1.) Connect AWS CLI to your AWS Environment
+```
 └─╾ aws configure
 AWS Access Key ID [****************WLUQ]:
 AWS Secret Access Key [****************Y1eJ]:
 Default region name [None]: us-east-2
 Default output format [None]: json
+```
 
 2.) You dont have to do this step but I have created a profile for this to easily switch between accounts. "ie: export AWS_PROFILE=sky-pro-multiaz"
+
 ~/.aws/config
+```
 [profile sky-pro-multiaz]
 output = text
 region = us-east-2
-
+```
 ~/.aws/credentials
+```
 [sky-pro-multiaz]
 aws_access_key_id = ****************WLUQ
 aws_secret_access_key = ****************Y1eJ
+```
 
 3.) Create a New Primary Key Pair for you EC2 Instances - [sky-production-key.pem]
+```
 └─╾ aws ec2 --region=us-east-2 create-key-pair --key-name sky-production-key --query 'KeyMaterial' --output text > sky-production-key.pem
+```
 
 4.) Set the appropriate permissions on the new key
+```
 └─╾ chmod 400 /etc/ansible/sky/sky-production-key.pem
+```
 
 5.) You should now have a private key called "sky-production-key.pem"
+```
 └─╾ ll /etc/ansible/sky/sky-production-key.pem
 -rw-r--r-- 1 root root 1675 Jul 25 17:03 /etc/ansible/sky/sky-production-key.pem
+```
 
 6.) Update the [aws_vars.yml] with the new key name. "note the key name not the key file.pem"
-┌─[root@EXE-KUBECTL]─[/etc/ansible/sky]─[No cluster loaded]
+```
 └─╾ cat /etc/ansible/sky/aws_vars.yml | grep key
 key_name: sky-production-key
+```
 
+### PURCHASE A VALID DNS NAME FROM ROUTE53 WITHIN YOUR AWS ACCOUNT
 
-######################################################################
-### PURCHASE A VALID DNS NAME FROM ROUTE53 WITHIN YOUR AWS ACCOUNT ###
-######################################################################
 1.) In my example I have purchased "stress-less-aws.co.uk"
 
 2.) Take a note of the "hosted_zone_name" and add it to the [aws_vars.yml]
+```
 └─╾ cat /etc/ansible/sky/aws_vars.yml | grep zone
 hosted_zone_name: "stress-less-aws.co.uk"
+```
 
 
-#############################################################################
-### REQUEST AND GENERATE A WEB CERTIFICATE FOR THE ALB HTTPS LISTENER:443 ###
-#############################################################################
+### REQUEST AND GENERATE A WEB CERTIFICATE FOR THE ALB HTTPS LISTENER:443
+
 1.) Now we need an SSL certificate for us to use later when building out our stack
+```
 └─╾ aws acm request-certificate --domain-name stress-less-aws.co.uk --validation-method DNS --subject-alternative-names *.stress-less-aws.co.uk
 {
     "CertificateArn": "arn:aws:acm:us-east-2:168878865077:certificate/1234ab5c6-1d29-5457-9087-01648bc60701"
 }
+```
 
 2.) Take a note of the certificate ARN and add it to the [aws_vars.yml]
+```
 └─╾ cat /etc/ansible/sky/aws_vars.yml | grep cert
 cert_arn: "arn:aws:acm:us-east-2:168878865077:certificate/1234ab5c6-1d29-5457-9087-01648bc60701"
+```
 
 3.) IMPORTANT - Dont forget to validate your certificate via DNS. If you browse to the AWS Certificate Manager Console you should see the certificate waiting to be validated there.
-https://us-east-2.console.aws.amazon.com/acm/home?region=us-east-2
+[https://us-east-2.console.aws.amazon.com/acm/home?region=us-east-2](https://us-east-2.console.aws.amazon.com/acm/home?region=us-east-2)
 
 "The DNS record was written to your Route 53 hosted zone. It can take 30 minutes or longer for the changes to propagate and for AWS to validate the domain and issue the certificate."
 
 For me the certificate took 16 minutes to be validated:
+```
 Requested at	2019-07-25T19:19:26UTC
 Issued at	2019-07-25T19:35:42UTC
+```
 
-
-###############################################################
-### LETS INSPECT OUR PRE-DEFINED VARIABLES - [aws_vars.yml] ###
-###############################################################
+### LETS INSPECT OUR PRE-DEFINED VARIABLES - [aws_vars.yml]
 
 We can define the parameters below to fully customize our stack. There are a few things to bare in mind. Earlier we created the ec2key pair (sky-production-key). 
-- KeyPairs in AWS are not global. So if you choose a different region as per what I have defined "us-east-2" Then you will need to recreate a new key in that region.
-- AMIs are not global. So if you choose a different region as per what I have defined "us-east-2" Then you will need to use another "Ubuntu 14.04 LTS" ami from that other region.
 
+* KeyPairs in AWS are not global. So if you choose a different region as per what I have defined "us-east-2" Then you will need to recreate a new key in that region.
+* AMIs are not global. So if you choose a different region as per what I have defined "us-east-2" Then you will need to use another "Ubuntu 14.04 LTS" ami from that other region.
+
+```
 └─╾ cat aws_vars.yml
 ####################################################
 # Auther: Tyrone France                            #
@@ -159,15 +177,13 @@ private_subnet_3_cidr:  "10.0.2.0/24"
 key_name: sky-production-key
 hosted_zone_name: "stress-less-aws.co.uk"
 cert_arn: "arn:aws:acm:us-east-2:168878865077:certificate/1234ab5c6-1d29-5457-9087-01648bc60701"
+```
 
-
-#######################
-### LAUNCH GO GO GO ###
-#######################
+### LAUNCH GO GO GO
 
 Now we can launch the AWS stack with ansible-playbook ensuring to export the below variables and defining the key to use.
 
-
+```
 └─╾ export AWS_PROFILE=sky-pro-multiaz
 └─╾ export ANSIBLE_HOST_KEY_CHECKING=False
 └─╾ ansible-playbook aws_stack.yml --private-key /etc/ansible/sky/sky-production-key.pem
@@ -177,11 +193,10 @@ PLAY RECAP *********************************************************************
 18.222.186.57              : ok=5    changed=3    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0
 3.15.156.239               : ok=5    changed=3    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0
 localhost                  : ok=37   changed=29   unreachable=0    failed=0    skipped=0    rescued=0    ignored=0
+```
 
 
-#############
-### NOTES ###
-#############
+### NOTES
 
 IMPORTANT - Please note that after your initial launch it may take a while for the DNS to propagate the update for the ALB - [sky.stress-less-aws.co.uk] so feel free to add an ip for the ELB to your hosts file.
 
@@ -201,10 +216,10 @@ I also did not have time to create a tear down script.
 
 
 
-###################
-### EXAMPLE RUN ###
-###################
 
+### EXAMPLE RUN
+
+```
 └─╾ ansible-playbook aws_stack.yml --private-key /etc/ansible/sky/sky-production-key.pem
 
 PLAY [AWS MultiAZ VPC Web Cluster] **********************************************************************************************************************************************************************************************************
@@ -371,3 +386,4 @@ PLAY RECAP *********************************************************************
 18.224.52.109              : ok=5    changed=3    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   
 52.15.82.79                : ok=5    changed=3    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   
 localhost                  : ok=34   changed=27   unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   
+```
