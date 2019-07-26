@@ -1,22 +1,23 @@
 
-### Auther: Tyrone France
-### Creation date: 26/07/2019
+Auther: Tyrone France
+Creation date: 26/07/2019
 
-### This guide will talk you through building an 
-### entire AWS MultiAZ Stack with 3 x web-servers
-### using Ansible in AWS US-EAST-2 [OHIO]
+This guide will talk you through building an 
+entire AWS MultiAZ Stack with 3 x web-servers
+using Ansible in AWS US-EAST-2 [OHIO]
 
+**Note**: After your initial launch it may take a while for the DNS to propagate the update for the ALB - [sky.stress-less-aws.co.uk](https://sky.stress-less-aws.co.uk/) so feel free to add an ip for the ELB to your hosts file.
 
 
 ### AWS STACK
 
-- 3 x EC2 Instances in zone a/b/c
-- 4 x elastic ips
-- 3 x nat gateways in zone a/b/c
-- 1 x Internet gateway
-- 3 x private subnets in zone a/b/c
-- 3 x public subnets in zone a/b/c
-- 1 x elastic load balancer
+* 3 x EC2 Instances in zone a/b/c
+* 4 x elastic ips
+* 3 x nat gateways in zone a/b/c
+* 1 x Internet gateway
+* 3 x private subnets in zone a/b/c
+* 3 x public subnets in zone a/b/c
+* 1 x elastic load balancer
 
 ### PREREQUISITS
 
@@ -24,12 +25,14 @@
 Ensure you have the appropriate AWS permissions and AWS Resource limits for the above infrastructure.
 
 
-AWS CLI:
+**AWS CLI:**
+```
 └─╾ aws --version
 aws-cli/1.16.198 Python/2.7.15+ Linux/4.15.0-52-generic botocore/1.12.188
+```
 
-
-ANSIBLE:
+**ANSIBLE:**
+```
 └─╾ ansible --version
 ansible 2.8.2
   config file = /etc/ansible/ansible.cfg
@@ -37,15 +40,16 @@ ansible 2.8.2
   ansible python module location = /usr/local/lib/python3.6/dist-packages/ansible
   executable location = /usr/local/bin/ansible
   python version = 3.6.8 (default, Jan 14 2019, 11:02:34) [GCC 8.0.1 20180414 (experimental) [trunk revision 259383]]
+```
 
-
-PYTHON:
+**PYTHON:**
+```
 └─╾ python3 --version
 Python 3.6.8
 
 └─╾ python --version
 Python 2.7.15+
-
+```
 
 ### CLONE THE PROJECT TO YOUR MACHINE
 1.) Clone the SKY Project
